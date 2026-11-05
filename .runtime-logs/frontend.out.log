@@ -1,0 +1,25 @@
+
+> dulsfilm-frontend@1.0.0 dev
+> vite --host=127.0.0.1 --port=5173
+
+19.50.17 [vite] (client) Re-optimizing dependencies because vite config has changed
+
+  VITE v8.3.4  ready in 616 ms
+
+  ➜  Local:   http://127.0.0.1:5173/
+19.50.19 [vite] (client) [optimizer] scanning dependencies...
+19.50.43 [vite] (client) [optimizer] bundling dependencies...
+19.56.37 [vite] (client) page reload src/main.jsx
+19.56.43 [vite] (client) hmr update /src/styles.css
+20.00.02 [vite] (client) page reload src/main.jsx
+20.00.07 [vite] (client) hmr update /src/styles.css
+20.00.25 [vite] (client) page reload src/main.jsx
+20.03.46 [vite] (client) page reload src/main.jsx
+20.03.53 [vite] (client) page reload src/main.jsx
+20.04.00 [vite] (client) page reload src/main.jsx
+20.07.55 [vite] (client) page reload src/main.jsx
+20.07.56 [vite] (client) hmr update /src/styles.css
+20.09.06 [vite] (client) page reload src/main.jsx
+20.09.07 [vite] (client) hmr update /src/styles.css
+20.12.53 [vite] (client) page reload src/main.jsx
+20.13.47 [vite] (client) page reload src/main.jsx
