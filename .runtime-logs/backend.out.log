@@ -1,0 +1,36 @@
+
+ INFO Server running on [http://127.0.0.1:8000]. 
+
+ Press Ctrl+C to stop the server
+
+ 2026-11-05 19:50:36 /api/movies .. ~ 516.60ms
+ 2026-11-05 19:50:36 /api/movies .. ~ 1.04ms
+ 2026-11-05 19:50:36 /api/auth/login .. ~ 1s
+ 2026-11-05 19:53:02 /api/movies .. ~ 510.92ms
+ 2026-11-05 19:53:03 /api/movies .. ~ 4.61ms
+ 2026-11-05 19:53:16 /api/movies .. ~ 1.09ms
+ 2026-11-05 19:57:09 /api/movies .. ~ 508.01ms
+ 2026-11-05 19:57:10 /api/movies .. ~ 1.23ms
+ 2026-11-05 20:01:00 /api/movies .. ~ 508.57ms
+ 2026-11-05 20:01:01 /api/movies .. ~ 1.26ms
+ 2026-11-05 20:01:01 /api/movies .. ~ 528.79ms
+ 2026-11-05 20:01:31 /api/auth/login .. ~ 506.10ms
+ 2026-11-05 20:01:31 /api/auth/login .. ~ 4.61ms
+ 2026-11-05 20:01:38 /api/auth/login .. ~ 1.20ms
+ 2026-11-05 20:01:38 /api/auth/login .. ~ 517.32ms
+ 2026-11-05 20:02:14 /api/auth/login .. ~ 6.25ms
+ 2026-11-05 20:02:14 /api/auth/login .. ~ 1s
+ 2026-11-05 20:03:46 /api/movies .. ~ 0.51ms
+ 2026-11-05 20:03:53 /api/movies .. ~ 2.14ms
+ 2026-11-05 20:04:00 /api/movies .. ~ 17.48ms
+ 2026-11-05 20:07:56 /api/movies .. ~ 518.92ms
+ 2026-11-05 20:08:10 /api/movies .. ~ 509.36ms
+ 2026-11-05 20:09:07 /api/movies .. ~ 512.24ms
+ 2026-11-05 20:09:56 /api/auth/register .. ~ 512.30ms
+ 2026-11-05 20:09:56 /api/auth/register .. ~ 503.45ms
+ 2026-11-05 20:10:33 /api/auth/login .. ~ 511.53ms
+ 2026-11-05 20:10:33 /api/auth/login .. ~ 517.21ms
+ 2026-11-05 20:11:11 /api/auth/login .. ~ 6.01ms
+ 2026-11-05 20:11:11 /api/auth/login .. ~ 510.57ms
+ 2026-11-05 20:12:53 /api/movies .. ~ 520.61ms
+ 2026-11-05 20:13:47 /api/movies .. ~ 6.47ms
