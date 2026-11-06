@@ -414,6 +414,58 @@ a { color: inherit; text-decoration: none; }
   color: #94a3b8;
 }
 
+.netflix-form.register-mode {
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.netflix-form.register-mode input {
+  width: min(100%, 520px);
+  min-width: 0;
+  flex: none;
+  box-sizing: border-box;
+}
+
+.password-input-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 260px;
+}
+
+.password-input-wrap input {
+  width: 100%;
+  padding-right: 48px;
+  box-sizing: border-box;
+}
+
+.register-mode .password-input-wrap {
+  width: min(100%, 520px);
+  min-width: 0;
+  flex: none;
+}
+
+.password-visibility-btn {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  padding: 5px;
+  border: 0;
+  background: transparent;
+  color: #94a3b8;
+  cursor: pointer;
+}
+
+.password-visibility-btn:hover { color: var(--gold-light); }
+
+.netflix-form.register-mode .netflix-submit-btn {
+  margin-top: 4px;
+  min-width: 190px;
+}
+
 .netflix-submit-btn {
   background: linear-gradient(135deg, #dfb76c 0%, #b48c55 100%);
   color: #0b1723;
@@ -1892,6 +1944,30 @@ a { color: inherit; text-decoration: none; }
   padding: 110px 24px 85px;
 }
 
+/* Beri ruang dari header agar logo utama tidak tertutup saat form bertambah tinggi. */
+.landing-page-view .netflix-center-card {
+  transform: translateY(58px);
+}
+
+/* Ruang ekstra untuk form pendaftaran yang memiliki field lebih banyak. */
+.landing-page-view .netflix-hero-section.main-auth-register {
+  min-height: calc(100vh + 170px);
+}
+
+.landing-page-view .netflix-hero-section.main-auth-login {
+  min-height: calc(100vh + 70px);
+}
+
+@media (max-width: 650px) {
+  .landing-page-view .netflix-center-card {
+    transform: translateY(34px);
+  }
+
+  .landing-page-view .netflix-hero-section.main-auth-register {
+    min-height: calc(100vh + 230px);
+  }
+}
+
 .netflix-guest-top-btn {
   background: rgba(223, 183, 108, 0.12);
   color: var(--gold-light);
@@ -1995,3 +2071,41 @@ a { color: inherit; text-decoration: none; }
   border-color: var(--gold);
   background: rgba(197, 157, 98, 0.1);
 }
+
+.admin-login-btn, .admin-entry-btn { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; border-radius: 5px; padding: 7px 12px; font-size: 11px; font-weight: 700; }
+.admin-login-btn { color: var(--gold-light); background: rgba(223,183,108,.12); border: 1px solid rgba(223,183,108,.4); }
+.admin-login-btn:hover, .admin-entry-btn:hover { color: #0b1723; background: var(--gold-light); }
+.admin-entry-btn { color: var(--gold-light); background: rgba(197,157,98,.1); border: 1px solid rgba(197,157,98,.35); }
+.main-login-error { margin: 10px auto 0; max-width: 440px; color: #ff9ca3; background: rgba(241,44,60,.12); border: 1px solid rgba(241,44,60,.3); border-radius: 6px; padding: 9px 12px; font-size: 12px; text-align: center; }
+
+/* Autentikasi email dan dashboard administrator */
+.email-auth-modal { width: min(420px, 94vw); background: #112232; border: 1px solid #284767; border-radius: 16px; padding: 30px; box-shadow: 0 25px 60px rgba(0,0,0,.75); position: relative; }
+.email-auth-modal h3 { color: #fff; text-align: center; font: 700 23px 'Space Grotesk', sans-serif; margin: 12px 0 7px; }
+.email-auth-icon { width: 48px; height: 48px; margin: 0 auto; border-radius: 14px; display: grid; place-items: center; color: var(--gold-light); background: rgba(197,157,98,.14); border: 1px solid rgba(197,157,98,.35); }
+.email-auth-subtitle { color: #8da3b8; font-size: 12px; line-height: 1.55; text-align: center; margin: 0 0 20px; }
+.email-auth-form { display: grid; gap: 10px; }
+.email-auth-form input, .admin-movie-form input, .admin-movie-form textarea { width: 100%; background: #0d1b28; color: #fff; border: 1px solid #294967; border-radius: 7px; padding: 11px 12px; font: inherit; font-size: 12px; outline: none; box-sizing: border-box; }
+.email-auth-form input:focus, .admin-movie-form input:focus, .admin-movie-form textarea:focus { border-color: var(--gold); }
+.auth-submit { width: 100%; justify-content: center; margin-top: 4px; }
+.auth-switch { display: block; margin: 17px auto 0; border: 0; background: transparent; color: var(--gold-light); font-size: 12px; cursor: pointer; }
+.auth-error { color: #ff8f96; background: rgba(241,44,60,.1); border: 1px solid rgba(241,44,60,.3); border-radius: 6px; padding: 9px; font-size: 11px; }
+.admin-page { min-height: 100vh; background: #09141f; color: #eaf2f8; }
+.admin-topbar { height: 72px; padding: 0 clamp(20px, 6vw, 90px); display: flex; align-items: center; justify-content: space-between; gap: 20px; background: #10202e; border-bottom: 1px solid #284767; }
+.admin-brand, .admin-user, .admin-user button, .admin-heading h1, .admin-stats div, .admin-delete { display: flex; align-items: center; gap: 9px; }
+.admin-brand { color: var(--gold-light); font-weight: 800; letter-spacing: 1.8px; font-size: 13px; }
+.admin-brand img { width: 35px; height: 35px; object-fit: contain; }
+.admin-user { color: #9bb0c2; font-size: 11px; }
+.admin-user button { margin-left: 12px; background: transparent; border: 1px solid #5b3438; color: #ff8d95; border-radius: 5px; padding: 7px 10px; cursor: pointer; }
+.admin-content { max-width: 1100px; padding: 48px 24px 80px; margin: auto; }
+.admin-heading { display: flex; justify-content: space-between; gap: 20px; align-items: end; margin-bottom: 28px; }
+.admin-heading h1 { color: #fff; font: 700 32px 'Space Grotesk', sans-serif; margin: 8px 0; }
+.admin-heading p:not(.section-overline) { color: #8da3b8; margin: 0; font-size: 13px; }
+.admin-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 22px; }
+.admin-stats div { background: #112334; border: 1px solid #284767; border-radius: 11px; padding: 18px; flex-wrap: wrap; }
+.admin-stats svg { color: var(--gold-light); }.admin-stats strong { font-size: 22px; color: #fff; }.admin-stats span { width: 100%; color: #8da3b8; font-size: 11px; }
+.admin-panel { background: #112334; border: 1px solid #284767; border-radius: 12px; padding: 22px; margin-top: 18px; }
+.admin-panel h2 { color: #fff; font: 700 18px 'Space Grotesk', sans-serif; margin: 0 0 16px; }
+.admin-movie-form { display: grid; grid-template-columns: 2fr 1fr 100px 1fr; gap: 10px; }.admin-movie-form textarea { grid-column: 1 / -1; min-height: 75px; resize: vertical; }.admin-movie-form button { justify-self: start; }
+.admin-message { color: #76e4a2; font-size: 12px; margin: 13px 0 0; }
+.admin-movie-list { display: grid; gap: 8px; }.admin-movie-row { display: flex; justify-content: space-between; align-items: center; gap: 15px; padding: 12px 13px; border: 1px solid #213f5d; border-radius: 8px; background: #0d1b28; }.admin-movie-row strong, .admin-movie-row span { display: block; }.admin-movie-row strong { color: #fff; font-size: 13px; }.admin-movie-row span { color: #8da3b8; font-size: 11px; margin-top: 4px; }.admin-delete { background: transparent; border: 1px solid #5b3438; color: #ff8d95; border-radius: 5px; padding: 7px 10px; cursor: pointer; }
+@media(max-width: 700px) { .admin-topbar, .admin-heading { align-items: flex-start; flex-direction: column; height: auto; padding-top: 16px; padding-bottom: 16px; }.admin-user { flex-wrap: wrap; }.admin-stats { grid-template-columns: 1fr; }.admin-movie-form { grid-template-columns: 1fr; }.admin-movie-form textarea { grid-column: auto; } }
