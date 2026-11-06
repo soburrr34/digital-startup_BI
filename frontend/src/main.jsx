@@ -3,7 +3,8 @@ import { createRoot } from 'react-dom/client';
 import {
   Search, Play, Plus, Check, Menu, X, Clapperboard, ChevronRight,
   Film, Flame, Sparkles, Clock3, Info, Star, Send, Download,
-  Trash2, HardDrive, Wifi, WifiOff, LogOut, CheckCircle, ChevronDown, Globe
+  Trash2, HardDrive, Wifi, WifiOff, LogOut, CheckCircle, ChevronDown, Globe, Eye, EyeOff,
+  LockKeyhole, UserPlus, LayoutDashboard, Users
 } from 'lucide-react';
 import './styles.css';
 import {
@@ -40,32 +41,21 @@ const fallbackMovies = [
 const genres = ['Semua', 'Action', 'Adventure', 'Crime', 'Drama', 'Sci-Fi', 'Thriller', 'Romance', 'Comedy', 'Horror'];
 const reviewsStorageKey = 'dulsfilm-reviews';
 const userStorageKey = 'nonton_santuyy_user';
+const authTokenKey = 'nonton_santuyy_token';
 
 const posterWallImages = [
-  'https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=400&q=80',
-  'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=400&q=80',
-  'https://images.unsplash.com/photo-1519608487953-e999c86e7455?auto=format&fit=crop&w=400&q=80',
   'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?auto=format&fit=crop&w=400&q=80',
   'https://images.unsplash.com/photo-1518837695005-2083093ee35b?auto=format&fit=crop&w=400&q=80',
   'https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?auto=format&fit=crop&w=400&q=80',
+  'https://images.unsplash.com/photo-1519608487953-e999c86e7455?auto=format&fit=crop&w=400&q=80',
   'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=400&q=80',
-  'https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?auto=format&fit=crop&w=400&q=80',
-  'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=400&q=80',
-  'https://images.unsplash.com/photo-1594909122845-11baa439b7bf?auto=format&fit=crop&w=400&q=80',
-  'https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?auto=format&fit=crop&w=400&q=80',
-  'https://images.unsplash.com/photo-1440404653325-ab127d49abc1?auto=format&fit=crop&w=400&q=80',
-  'https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=400&q=80',
   'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=400&q=80',
-  'https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=400&q=80',
-  'https://images.unsplash.com/photo-1563089145-599997674d42?auto=format&fit=crop&w=400&q=80',
   'https://images.unsplash.com/photo-1518173946687-a4c8a383392e?auto=format&fit=crop&w=400&q=80',
   'https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=400&q=80',
   'https://images.unsplash.com/photo-1514565131-fce0801e5785?auto=format&fit=crop&w=400&q=80',
   'https://images.unsplash.com/photo-1509281373149-e957c6296406?auto=format&fit=crop&w=400&q=80',
   'https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?auto=format&fit=crop&w=400&q=80',
   'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=400&q=80',
-  'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?auto=format&fit=crop&w=400&q=80',
-  'https://images.unsplash.com/photo-1519608487953-e999c86e7455?auto=format&fit=crop&w=400&q=80',
 ];
 
 function readSavedReviews() {
@@ -101,6 +91,88 @@ function getYoutubeId(url) {
     return null;
   }
   return null;
+}
+
+function EmailAuthModal({ isOpen, onClose, onLoginSuccess, initialEmail = '' }) {
+  const [mode, setMode] = useState('login');
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState(initialEmail);
+  const [password, setPassword] = useState('');
+  const [confirmation, setConfirmation] = useState('');
+  const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => { if (isOpen) { setEmail(initialEmail); setError(''); } }, [isOpen, initialEmail]);
+  if (!isOpen) return null;
+
+  const submit = async (event) => {
+    event.preventDefault();
+    setError('');
+    if (mode === 'register' && password !== confirmation) return setError('Konfirmasi password tidak sama.');
+    setBusy(true);
+    const apiBase = (import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000/api').replace(/\/$/, '');
+    try {
+      const response = await fetch(`${apiBase}/auth/${mode}`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify(mode === 'login' ? { email, password } : { name, email, password, password_confirmation: confirmation }),
+      });
+      const payload = await response.json();
+      if (!response.ok) throw new Error(payload.message || Object.values(payload.errors || {}).flat()[0] || 'Autentikasi gagal.');
+      onLoginSuccess(payload);
+    } catch (err) {
+      setError(err.message || 'Tidak dapat terhubung ke server.');
+    } finally { setBusy(false); }
+  };
+
+  return <div className="modal-backdrop" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+    <div className="email-auth-modal" role="dialog" aria-modal="true" aria-label="Login Nonton Santuyy">
+      <button className="modal-close" onClick={onClose} aria-label="Tutup"><X size={18} /></button>
+      <div className="email-auth-icon"><LockKeyhole size={24} /></div>
+      <h3>{mode === 'login' ? 'Masuk ke Nonton Santuyy' : 'Buat akun baru'}</h3>
+      <p className="email-auth-subtitle">Gunakan email dan password. Sistem otomatis mengarahkan sesuai hak akses akun.</p>
+      <form onSubmit={submit} className="email-auth-form">
+        {mode === 'register' && <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Nama lengkap" required />}
+        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" required />
+        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password (min. 6 karakter)" minLength={6} required />
+        {mode === 'register' && <input type="password" value={confirmation} onChange={(e) => setConfirmation(e.target.value)} placeholder="Ulangi password" minLength={6} required />}
+        {error && <div className="auth-error">{error}</div>}
+        <button className="btn-primary auth-submit" disabled={busy}>{busy ? 'Memproses...' : mode === 'login' ? 'Masuk' : 'Daftar'}</button>
+      </form>
+      <button className="auth-switch" onClick={() => { setMode(mode === 'login' ? 'register' : 'login'); setError(''); }}>
+        {mode === 'login' ? 'Belum punya akun? Daftar sekarang' : 'Sudah punya akun? Masuk'}
+      </button>
+    </div>
+  </div>;
+}
+
+function AdminDashboard({ user, movies, onMoviesChange, onLogout, onBack }) {
+  const [form, setForm] = useState({ title: '', genre: 'Drama', year: new Date().getFullYear(), rating: 0, duration: '', category: 'New', image_url: '', video_url: '/videos/sample.mp4', description: '' });
+  const [message, setMessage] = useState('');
+  const apiBase = (import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000/api').replace(/\/$/, '');
+  const headers = { 'Content-Type': 'application/json', Accept: 'application/json', Authorization: `Bearer ${window.localStorage.getItem(authTokenKey)}` };
+  const saveMovie = async (event) => {
+    event.preventDefault();
+    try {
+      const response = await fetch(`${apiBase}/admin/movies`, { method: 'POST', headers, body: JSON.stringify(form) });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Gagal menyimpan film.');
+      onMoviesChange((current) => [data, ...current]);
+      setForm({ ...form, title: '', description: '' }); setMessage('Film berhasil ditambahkan.');
+    } catch (err) { setMessage(err.message); }
+  };
+  const deleteMovie = async (movie) => {
+    if (!window.confirm(`Hapus film ${movie.title}?`)) return;
+    const response = await fetch(`${apiBase}/admin/movies/${movie.id}`, { method: 'DELETE', headers });
+    if (response.ok) { onMoviesChange((current) => current.filter((item) => item.id !== movie.id)); setMessage('Film dihapus.'); }
+  };
+  return <div className="admin-page">
+    <header className="admin-topbar"><div className="admin-brand"><img src="/images/ns-logo.png" alt="NS" /> <span>ADMIN CONSOLE</span></div><div className="admin-user">{user.name} · {user.email}<button onClick={onLogout}><LogOut size={15} /> Keluar</button></div></header>
+    <main className="admin-content"><div className="admin-heading"><div><p className="section-overline">NONTON SANTUYY</p><h1><LayoutDashboard size={28} /> Dashboard Admin</h1><p>Kelola katalog film dari satu tempat.</p></div><button className="btn-secondary" onClick={onBack}>Kembali ke katalog</button></div>
+      <div className="admin-stats"><div><Film size={20} /><strong>{movies.length}</strong><span>Total Film</span></div><div><Users size={20} /><strong>—</strong><span>Pengguna</span></div><div><LockKeyhole size={20} /><strong>Aktif</strong><span>Akses Admin</span></div></div>
+      <section className="admin-panel"><h2>Tambah Film</h2><form className="admin-movie-form" onSubmit={saveMovie}><input placeholder="Judul film" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} required /><input placeholder="Genre" value={form.genre} onChange={(e) => setForm({ ...form, genre: e.target.value })} required /><input type="number" placeholder="Tahun" value={form.year} onChange={(e) => setForm({ ...form, year: e.target.value })} required /><input placeholder="Durasi (contoh: 2j 08m)" value={form.duration} onChange={(e) => setForm({ ...form, duration: e.target.value })} /><input placeholder="URL poster" value={form.image_url} onChange={(e) => setForm({ ...form, image_url: e.target.value })} /><textarea placeholder="Sinopsis" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} /><button className="btn-primary" type="submit">Tambah ke Katalog</button></form>{message && <p className="admin-message">{message}</p>}</section>
+      <section className="admin-panel"><h2>Daftar Katalog</h2><div className="admin-movie-list">{movies.map((movie) => <div className="admin-movie-row" key={movie.id}><div><strong>{movie.title}</strong><span>{movie.year} · {movie.genre} · Rating {movie.rating}</span></div><button className="admin-delete" onClick={() => deleteMovie(movie)}><Trash2 size={15} /> Hapus</button></div>)}</div></section>
+    </main>
+  </div>;
 }
 
 function MovieVideo({ url, blobUrl, title, background = false }) {
@@ -367,10 +439,20 @@ function App() {
   const [mobileMenu, setMobileMenu] = useState(false);
   const [notice, setNotice] = useState('');
   const [heroEmail, setHeroEmail] = useState('');
+  const [heroPassword, setHeroPassword] = useState('');
+  const [heroName, setHeroName] = useState('');
+  const [heroPasswordConfirmation, setHeroPasswordConfirmation] = useState('');
+  const [showHeroPassword, setShowHeroPassword] = useState(false);
+  const [showHeroPasswordConfirmation, setShowHeroPasswordConfirmation] = useState(false);
+  const [mainAuthMode, setMainAuthMode] = useState('login');
+  const [heroAuthError, setHeroAuthError] = useState('');
+  const [heroAuthBusy, setHeroAuthBusy] = useState(false);
 
   // Fitur Login Google
   const [user, setUser] = useState(readSavedUser);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isEmailAuthOpen, setIsEmailAuthOpen] = useState(false);
+  const [authEmail, setAuthEmail] = useState('');
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
 
   // Fitur Offline & Unduhan
@@ -384,9 +466,10 @@ function App() {
     if (typeof window !== 'undefined') {
       const hash = window.location.hash.toLowerCase();
       if (hash === '#browse' || hash === '#film' || hash === '#catalog') return 'browse';
+      if (hash === '#admin') return 'admin';
       if (hash === '#login' || hash === '#landing') return 'landing';
       const savedUser = readSavedUser();
-      return savedUser ? 'browse' : 'landing';
+      return savedUser ? (savedUser.role === 'admin' ? 'admin' : 'browse') : 'landing';
     }
     return 'landing';
   });
@@ -394,7 +477,7 @@ function App() {
   const navigateTo = (view) => {
     setCurrentView(view);
     if (typeof window !== 'undefined') {
-      window.location.hash = view === 'browse' ? '#browse' : '#login';
+      window.location.hash = view === 'browse' ? '#browse' : view === 'admin' ? '#admin' : '#login';
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
@@ -404,6 +487,8 @@ function App() {
       const hash = window.location.hash.toLowerCase();
       if (hash === '#browse' || hash === '#film' || hash === '#catalog') {
         setCurrentView('browse');
+      } else if (hash === '#admin') {
+        setCurrentView('admin');
       } else if (hash === '#login' || hash === '#landing') {
         setCurrentView('landing');
       }
@@ -414,28 +499,58 @@ function App() {
 
   // Simpan user ke localStorage jika berubah
   const handleLoginSuccess = (userData) => {
-    setUser(userData);
+    const loggedInUser = userData.user || userData;
+    setUser(loggedInUser);
     try {
-      window.localStorage.setItem(userStorageKey, JSON.stringify(userData));
+      window.localStorage.setItem(userStorageKey, JSON.stringify(loggedInUser));
+      if (userData.token) window.localStorage.setItem(authTokenKey, userData.token);
     } catch (e) {
       console.warn('Gagal simpan user ke local storage:', e);
     }
     setIsAuthModalOpen(false);
-    navigateTo('browse');
-    setNotice(`Selamat datang, ${userData.name}! Kamu sekarang dapat memberi rating & ulasan.`);
+    navigateTo(loggedInUser.role === 'admin' ? 'admin' : 'browse');
+    setNotice(`Selamat datang, ${loggedInUser.name}!`);
     window.setTimeout(() => setNotice(''), 3000);
+  };
+
+  const handleMainLogin = async (event) => {
+    event.preventDefault();
+    setHeroAuthError('');
+    setHeroAuthBusy(true);
+    const apiBase = (import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000/api').replace(/\/$/, '');
+    try {
+      if (mainAuthMode === 'register' && heroPassword !== heroPasswordConfirmation) {
+        throw new Error('Konfirmasi password tidak sama.');
+      }
+      const response = await fetch(`${apiBase}/auth/${mainAuthMode === 'register' ? 'register' : 'login'}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify(mainAuthMode === 'register'
+          ? { name: heroName, email: heroEmail, password: heroPassword, password_confirmation: heroPasswordConfirmation }
+          : { email: heroEmail, password: heroPassword }),
+      });
+      const payload = await response.json();
+      if (!response.ok) throw new Error(payload.message || Object.values(payload.errors || {}).flat()[0] || 'Email atau password salah.');
+      handleLoginSuccess(payload);
+      setHeroPassword('');
+    } catch (error) {
+      setHeroAuthError(error.message || 'Login gagal. Pastikan server aktif.');
+    } finally {
+      setHeroAuthBusy(false);
+    }
   };
 
   const handleLogout = () => {
     setUser(null);
     try {
       window.localStorage.removeItem(userStorageKey);
+      window.localStorage.removeItem(authTokenKey);
     } catch (e) {
       console.warn('Gagal hapus user:', e);
     }
     setIsProfileMenuOpen(false);
     navigateTo('landing');
-    setNotice('Kamu telah keluar dari akun Google.');
+    setNotice('Kamu telah keluar dari akun.');
     window.setTimeout(() => setNotice(''), 2500);
   };
 
@@ -726,6 +841,10 @@ function App() {
   // Total ukuran memori offline
   const totalOfflineBytes = offlineVideos.reduce((acc, curr) => acc + (curr.sizeBytes || 0), 0);
 
+  if (currentView === 'admin' && user?.role === 'admin') {
+    return <AdminDashboard user={user} movies={movies} onMoviesChange={setMovies} onLogout={handleLogout} onBack={() => navigateTo('browse')} />;
+  }
+
   return (
     <div className="app-shell">
       {/* Banner Deteksi Offline */}
@@ -754,6 +873,11 @@ function App() {
             </a>
 
             <div className="top-actions">
+              {user?.role === 'admin' && (
+                <button className="admin-entry-btn" onClick={() => navigateTo('admin')}>
+                  <LayoutDashboard size={14} /> Dashboard Admin
+                </button>
+              )}
               <div className="netflix-lang-picker" title="Pilih Bahasa">
                 <Globe size={15} />
                 <span>Indonesia</span>
@@ -762,16 +886,23 @@ function App() {
 
               <button
                 className="netflix-top-masuk-btn"
-                onClick={() => setIsAuthModalOpen(true)}
+                onClick={() => { setMainAuthMode('login'); document.getElementById('main-login-form')?.scrollIntoView({ behavior: 'smooth', block: 'center' }); }}
                 aria-label="Masuk ke Akun"
               >
                 Masuk
+              </button>
+              <button
+                className="admin-login-btn"
+                onClick={() => { setMainAuthMode('register'); setHeroName(''); setHeroEmail(''); setHeroPassword(''); setHeroPasswordConfirmation(''); document.getElementById('main-login-form')?.scrollIntoView({ behavior: 'smooth', block: 'center' }); }}
+                aria-label="Daftar Akun"
+              >
+                Daftar Akun
               </button>
             </div>
           </header>
 
           {/* Hero Section Landing ala Netflix dengan Logo NS di Tengah */}
-          <main className="netflix-hero-section landing-hero-standalone">
+          <main className={`netflix-hero-section landing-hero-standalone main-auth-${mainAuthMode}`}>
             {/* Tilted Collage Poster Wall Background */}
             <div className="netflix-poster-wall" aria-hidden="true">
               {posterWallImages.map((src, idx) => (
@@ -794,19 +925,16 @@ function App() {
               </div>
 
               <p className="netflix-subhead-2">
-                Siap menonton? Masukkan email Anda untuk mulai menonton gratis tanpa batas atau masuk dengan akun Google.
+                Masukkan email dan password untuk masuk sebagai user atau admin.
               </p>
 
               <div className="netflix-cta-container">
                 <form
-                  className="netflix-form"
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    navigateTo('browse');
-                    setNotice(heroEmail ? `Selamat datang! Menampilkan film untuk ${heroEmail}` : 'Selamat menikmati streaming gratis di Nonton Santuyy!');
-                    window.setTimeout(() => setNotice(''), 3000);
-                  }}
+                  className={`netflix-form ${mainAuthMode === 'register' ? 'register-mode' : ''}`}
+                  id="main-login-form"
+                  onSubmit={handleMainLogin}
                 >
+                  {mainAuthMode === 'register' && <input type="text" placeholder="Nama lengkap" value={heroName} onChange={(e) => setHeroName(e.target.value)} required />}
                   <input
                     type="email"
                     placeholder="Alamat email"
@@ -815,11 +943,28 @@ function App() {
                     aria-label="Alamat email"
                     required
                   />
+                  <div className="password-input-wrap">
+                    <input
+                      type={showHeroPassword ? 'text' : 'password'}
+                      placeholder="Password"
+                      value={heroPassword}
+                      onChange={(e) => setHeroPassword(e.target.value)}
+                      aria-label="Password"
+                      minLength={6}
+                      required
+                    />
+                    <button type="button" className="password-visibility-btn" onClick={() => setShowHeroPassword((value) => !value)} aria-label={showHeroPassword ? 'Sembunyikan password' : 'Tampilkan password'}>
+                      {showHeroPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
+                  {mainAuthMode === 'register' && <div className="password-input-wrap"><input type={showHeroPasswordConfirmation ? 'text' : 'password'} placeholder="Ulangi password" value={heroPasswordConfirmation} onChange={(e) => setHeroPasswordConfirmation(e.target.value)} minLength={6} required /><button type="button" className="password-visibility-btn" onClick={() => setShowHeroPasswordConfirmation((value) => !value)} aria-label={showHeroPasswordConfirmation ? 'Sembunyikan konfirmasi password' : 'Tampilkan konfirmasi password'}>{showHeroPasswordConfirmation ? <EyeOff size={18} /> : <Eye size={18} />}</button></div>}
                   <button type="submit" className="netflix-submit-btn">
-                    <span>Mulai</span>
+                    <span>{heroAuthBusy ? 'Memproses...' : mainAuthMode === 'register' ? 'Daftar' : 'Masuk'}</span>
                     <ChevronRight size={26} />
                   </button>
                 </form>
+
+                {heroAuthError && <p className="main-login-error">{heroAuthError}</p>}
 
                 <div className="netflix-center-extra">
                   <button
@@ -828,7 +973,7 @@ function App() {
                     onClick={() => setIsAuthModalOpen(true)}
                   >
                     <GoogleIcon size={16} />
-                    <span>Atau Masuk Cepat dengan Akun Google</span>
+                    <span>Login dengan Akun Google</span>
                   </button>
                 </div>
               </div>
@@ -944,6 +1089,7 @@ function App() {
                       </div>
 
                       <div className="profile-menu-links">
+                        {user.role === 'admin' && <button className="profile-menu-item" onClick={() => { navigateTo('admin'); setIsProfileMenuOpen(false); }}><LayoutDashboard size={15} color="#dfb76c" /> Dashboard Admin</button>}
                         <button
                           className="profile-menu-item"
                           onClick={() => { setActiveTab('Unduhan'); setIsProfileMenuOpen(false); scrollToCatalog(); }}
@@ -975,8 +1121,8 @@ function App() {
                   <button
                     className="netflix-top-masuk-btn"
                     style={{ padding: '6px 14px', fontSize: 12.5 }}
-                    onClick={() => setIsAuthModalOpen(true)}
-                    aria-label="Masuk Google"
+                    onClick={() => { setAuthEmail(''); setIsEmailAuthOpen(true); }}
+                    aria-label="Masuk"
                   >
                     Masuk
                   </button>
@@ -1241,8 +1387,8 @@ function App() {
             <p className="banner-copy">Masuk dengan akun Google untuk memberi ulasan bintang dan simpan film ke perangkatmu.</p>
           </div>
           {!user ? (
-            <button className="google-login-btn" onClick={() => setIsAuthModalOpen(true)}>
-              <GoogleIcon size={18} /> Login dengan Google
+            <button className="google-login-btn" onClick={() => { setAuthEmail(''); setIsEmailAuthOpen(true); }}>
+              <LockKeyhole size={18} /> Masuk dengan Email
             </button>
           ) : (
             <button className="btn-primary" onClick={() => { setActiveTab('Unduhan'); scrollToCatalog(); }}>
@@ -1503,6 +1649,13 @@ function App() {
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
         onLoginSuccess={handleLoginSuccess}
+      />
+
+      <EmailAuthModal
+        isOpen={isEmailAuthOpen}
+        initialEmail={authEmail}
+        onClose={() => setIsEmailAuthOpen(false)}
+        onLoginSuccess={(payload) => { setIsEmailAuthOpen(false); handleLoginSuccess(payload); }}
       />
 
       {/* Toast Notifikasi */}
